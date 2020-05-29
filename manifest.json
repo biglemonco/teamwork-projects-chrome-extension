@@ -1,0 +1,13 @@
+{
+	"manifest_version": 2,
+	"name": "Teamwork Projects Chart Stylizer",
+	"description": "Stylize project charts to help understand your workflow.",
+	"version": "1.0",
+	"permissions": ["activeTab"],
+	"content_scripts": [
+		{
+			"matches": ["https://*.teamwork.com/*", "https://*.eu.teamwork.com/*"],
+			"js": ["jquery.slim.min.js", "apply-colors-to-bars.js"]
+		}
+	]
+}
