@@ -34,30 +34,42 @@ const applyColorsToChartBars = function(colorMap) {
 	})
 }
 
-var done = false;
-var attempts = 0;
-function checkForElements() {
+function runChecker() {
+	var done = false;
+	var attempts = 0;
 
-	attempts++;
-	checkStopInterval();
+	function checkForElements() {
 
-	if ($('.vis-timeline .vis-item.vis-tw-project').length < 2) {
-		return;
+		attempts++;
+		checkStopInterval();
+
+		if ($('.vis-timeline .vis-item.vis-tw-project').length < 2) {
+			return;
+		}
+
+		const colorMap = createProjectIdColorMap();
+		// console.log(colorMap)
+
+		if (Object.keys(colorMap).length > 0) {
+			done = true;
+			applyColorsToChartBars(colorMap);
+		}
 	}
 
-	const colorMap = createProjectIdColorMap();
-	// console.log(colorMap)
-
-	if (Object.keys(colorMap).length > 0) {
-		done = true;
-		applyColorsToChartBars(colorMap);
+	function checkStopInterval() {
+		if (attempts > 10 || done) {
+			clearInterval(checkInterval);
+		}
 	}
+
+	const checkInterval = setInterval(checkForElements, 500);
 }
 
-function checkStopInterval() {
-	if (attempts > 15 || done) {
-		clearInterval(checkInterval);
+chrome.runtime.onMessage.addListener(function (request, sender, sendResponse) {
+	// listen for messages sent from background.js
+	if (request.message === 'new-chart-tab') {
+		runChecker();
 	}
-}
+});
 
-const checkInterval = setInterval(checkForElements, 500);
+runChecker();
